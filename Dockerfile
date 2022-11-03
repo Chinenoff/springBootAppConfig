@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM adoptopenjdk/openjdk11:alpine-jre
 EXPOSE 8081
-ADD target/appTestContainers-0.0.1-SNAPSHOT.jar myapp.jar
-ENTRYPOINT ["java","-jar","/myapp.jar"]
+COPY target/springBootAppConfig-0.0.1-SNAPSHOT.jar prodapp.jar
+CMD  ["java","-jar","prodapp.jar"]

@@ -1,4 +1,5 @@
-//package com.example.springbootapp1;
+package com.example.springbootapp1;
+
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,10 +13,11 @@ import org.testcontainers.containers.GenericContainer;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DemoApplicationTests {
     @Autowired
-    private static TestRestTemplate restTemplate;
+    TestRestTemplate restTemplate;
 
     private static GenericContainer<?> devApp = new GenericContainer<>("devapp")
             .withExposedPorts(8080);
+
 
     private static GenericContainer<?> prodApp = new GenericContainer<>("prodapp")
             .withExposedPorts(8081);
@@ -23,22 +25,20 @@ class DemoApplicationTests {
     @BeforeAll
     public static void setUp() {
         devApp.start();
-        prodApp.start();
     }
 
     @Test
-    void contextLoads() {
-        Integer devAppMappedPort = devApp.getMappedPort(8080);
-        Integer prodAppMappedPort = prodApp.getMappedPort(8081);
-
-        ResponseEntity<Integer> entityFromDev = restTemplate.getForEntity("http://localhost:" + devAppMappedPort + "/profile", Integer.class);
-        ResponseEntity<Integer> entityFromProd = restTemplate.getForEntity("http://localhost:" + prodAppMappedPort + "/profile", Integer.class);
-
-        Integer expectedDevAppMappedPort = 8080;
-        Integer expectedProdAppMappedPort = 8081;
-
-        Assertions.assertEquals(expectedDevAppMappedPort, entityFromDev);
-        Assertions.assertEquals(expectedProdAppMappedPort, entityFromProd);
+     void contextLoads() {
+        ResponseEntity<String> forEntity1 = restTemplate.getForEntity("http://localhost:" + devApp.getMappedPort(8080) + "/profile", String.class);
+        System.out.println(forEntity1.getBody());
+        ResponseEntity<String> forEntity2 = restTemplate.getForEntity("http://localhost:" + prodApp.getMappedPort(8081) + "/profile", String.class);
+        System.out.println(forEntity2.getBody());
+        String actualResult1 = "Current profile is dev";
+        String expectedResult1 = forEntity1.getBody();
+        Assertions.assertEquals(actualResult1, expectedResult1);
+        String actualResult2 = "Current profile is production";
+        String expectedResult2 = forEntity2.getBody();
+        Assertions.assertEquals(actualResult2, expectedResult2);
     }
 
 }
